@@ -44,7 +44,7 @@
         document.getElementById("submitBtn").addEventListener("click", function () {
           const form = document.getElementById("shopperForm");
           const email = document.getElementById("email").value.trim();
-          const fname = document.getElementById("fname").value.trim();
+          const name = document.getElementById("fname").value.trim();
           const phone = document.getElementById("Phone").value.trim();
           const age = document.getElementById("Age").value.trim();
           const address = document.getElementById("Address").value.trim();
@@ -68,7 +68,7 @@
 
           const shopperData = {
             email: email,
-            name: fname,
+            name: name,
             phone: phone,
             age: age,
             address: address,
@@ -85,6 +85,7 @@
   </body>
 
 </html>
+
 
 
 
