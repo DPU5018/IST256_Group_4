@@ -7,7 +7,7 @@
     <!--Credits: HTML: David Uhlmann CSS: Hamlet Baghdasaryan JavaScript: Abel Chacko-->
     <link rel="stylesheet" type="text/css" href = "Css.css">
 </head>
-<body>
+<body> 
 <section>
         <h1>Product Management</h1>
         <br>
@@ -81,7 +81,7 @@
             const measure = $.trim($("#Measure").val());
             const price = $.trim($("#Price").val())
             const weight = $.trim($("#Weight").val());
-            const ouput = $("#Json-Ouput");
+            const output = $("#Json-Output");
 
             if (!productID || !description || !category || !measure || !price || !weight) {
                 alert("please ensure all fields are full");
@@ -96,15 +96,15 @@
 
             const productData = {
                 productID: productID,
-                description: productDescription,
-                category: Category,
-                measure: Measure,
-                price: Price,
-                weight: Weight,
+                description: description,
+                category: category,
+                measure: measure,
+                price: price,
+                weight: weight,
             };
 
             output.text(JSON.stringify(productData, null, 2));
-            output.classList.add("border", "border-success", "p-3");
+            output.addClass("border border-success p-3");
         });
     });
 </script>
@@ -112,6 +112,7 @@
 </body>
 
 </html>
+
 
 
 
