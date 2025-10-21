@@ -94,7 +94,17 @@
                 return;
             }
 
-            const pricePattern = 
+            const productData = {
+                productID: productID,
+                description: productDescription,
+                category: Category,
+                measure: Measure,
+                price: Price,
+                weight: Weight,
+            };
+
+            output.text(JSON.stringify(productData, null, 2));
+            output.classList.add("border", "border-success", "p-3");
         });
     });
 </script>
@@ -102,6 +112,7 @@
 </body>
 
 </html>
+
 
 
 
