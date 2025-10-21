@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <title>Product Management</title>
     <!--Credits: HTML: David Uhlmann CSS: Hamlet Baghdasaryan JavaScript: Abel Chacko-->
     <link rel="stylesheet" type="text/css" href = "Css.css">
@@ -67,53 +68,40 @@
     <pre id="Json-Output"></pre>
     
 </section>
-<script src = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    document.getElementById("saveButton").addEventListener("click", function () {
-        const form = document.getElementById("productForm");
-        const productID = document.getElementById("productID").value.trim();
-        const description = document.getElementById("productDescription").value.trim();
-        const category = document.getElementById("Category").value.trim();
-        const measure = document.getElementById("Measure").value.trim();
-        const price = document.getElementById("Price").value.trim();
-        const weight = document.getElementById("Weight").value.trim();
-        const output = document.getElementById("Json-Output");
+    $(document).ready(function () {
+        $("#saveButton").on("click", function (e) {
+            e.preventDefault();
 
-        if (!productID || !productDescription || !Category || !Measure || !Price || !Weight) {
-            alert("Please fill every field!!");
-            return;
-        }
+            const productID = $.trim($("#productID").val());
+            const description = $.trim($("#productDescription").val());
+            const category = $.trim($("#Category").val());
+            const measure = $.trim($("#Measure").val());
+            const price = $.trim($("#Price").val())
+            const weight = $.trim($("#Weight").val());
+            const ouput = $("#Json-Ouput");
 
-        const productIDPattern = /^[0-9]{5}$/;
-        if (!productIDPattern.test(productID)) {
-            alert("Not Valid! Enter the 5 digit ID");
-            return;
-        }
+            if (!productID || !description || !category || !measure || !price || !weight) {
+                alert("please ensure all fields are full");
+                return;
+            }
 
-        const PricePattern = /^[0-9]$/;
-        if (!PricePattern.test(Price)){
-            alert("Not a valid Price! Please Enter all numbers")
-            return;
-        }
+            const productIDPattern = /^[0-9]{5}$/;
+            if(!productIDPattern.test(productID)){
+                alert("Pleasure enter the valid 5 digit ID");
+                return;
+            }
 
-        constProductData = {
-            productID: productID,
-            description: productDescription,
-            category: Category,
-            measure: Measure,
-            price: Price,
-            weight: Weight,
-        };
-        
-        output.textContent = JSON.stringify(ProductData, null, 2);
-
-        output.classList.add("border", "border-success", "p-3");
+            const pricePattern = 
+        });
     });
 </script>
     
 </body>
 
 </html>
+
 
 
