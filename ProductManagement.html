@@ -28,12 +28,12 @@
         <label for="Category" >Product Category: </label>
         <br>
         <select name="subject" id="Category">
-        <option value=" " selected="selected">Select Category</option>
-        <option value="Consoles">Software</option>
-        <option value="Computers">Computer</option>
-        <option value="Laptop">Laptop</option>
-        <option value="Cable">Cable</option>
-        <option value="other">Other</option>  
+            <option value=" " selected="selected">Select Category</option>
+            <option value="Consoles">Software</option>
+            <option value="Computers">Computer</option>
+            <option value="Laptop">Laptop</option>
+            <option value="Cable">Cable</option>
+            <option value="other">Other</option>  
         </select>
         <br>
         <br>
@@ -63,6 +63,10 @@
         <br>
 
         <input type="submit" id="saveButton" value="Save">
+ cla
+        <label for="searchID" class="form-label">Search via Product ID</label>
+        <input type="text" id="searchID" class="form-control" placeholder="enter ID">
+        <button id="searchbtn" class="btn btn-primary mt-2">SEARCH</button>
 
     </form>
     <pre id="Json-Output"></pre>
@@ -105,13 +109,48 @@
 
             output.text(JSON.stringify(productData, null, 2));
             output.addClass("border border-success p-3");
+            localStorage.setItem(productID, JSON.stringify(productData));
         });
+
+        $("#searchbtn").on("click", function (e){
+            e.preventDefault();
+
+            const IDsearch = $.trim($("#searchID").val());
+            const output = $("#JSON-Output");
+
+            if (!IDsearch) {
+                alert("Please enter a valid ID to look up");
+                return;
+            }
+
+            const findprod = localStorage.getItem(IDsearch);
+
+            if (findprod) {
+                const prod = JSON.parse(findprod);
+
+                $("#productID").val(prod.productID);
+                $("#productDescription").val(prod.description);
+                $("#Category").val(prod.category);
+                $("#Measure").val(prod.measure);
+                $("#Price").val(prod.price);
+                $("#Weight").val(prod.weight);
+
+                output.text(JSON.stringify(prod, null, 2));
+                output.addClass("border border-info p-3");
+            } else {
+                alert("Product Does not exist");
+                output.text("");
+                output.removeClass("border border-info border-success p-3");
+            }
+        })
+        
     });
 </script>
     
 </body>
 
 </html>
+
 
 
 
