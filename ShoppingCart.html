@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" type="text/css" href = "Css.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- [Task: jQuery + AJAX | Hamlet Baghdasaryan] -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<header>
+    <nav>
+        <ul>
+            <li><a href="index.html">Sign Up</a></li>
+            <li><a href="ShoppingCart.html">Cart</a></li>
+            <li><a href="ProductManagment.html">Product Management</a></li>
+        </ul>
+    </nav>
+    <hr>
+    <h1>TBD Proto Corp inc LLC</h1>
+</header>
+<section>
+    <h2> Products</h2>
+    <div class="mb-2">
+        <input id="searchInput" class="form-control" placeholder="Search products by name...">
+        <div class="mt-2">
+            <button id="showJsonBtn" class="btn btn-secondary btn-sm">Show JSON</button>
+            <button id="submitBtn"  class="btn btn-success btn-sm">Submit (AJAX)</button>
+        </div>
+        <pre id="cartJson" class="mt-3"></pre>
+    </div>
+    <div>
+        <div>
+            <strong>Consoles</strong>
+        </div>
+        <div>
+            <span>$399.99</span>
+            <button role="button"> Add to Cart</button>
+        </div>
+    </div>
+    <div>
+        <div>
+            <strong>Computers</strong>
+        </div>
+        <div>
+            <span>$499.99</span>
+            <button role="button"> Add to Cart</button>
+        </div>
+    </div>
+    <div>
+        <div>
+            <strong>Laptop</strong>
+        </div>
+        <div>
+            <span>$299.99</span>
+            <button role="button"> Add to Cart</button>
+        </div>
+    </div>
+
+    <div>
+        <div>
+            <strong>Cable</strong>
+        </div>
+        <div>
+            <span>$24.99</span>
+            <button role="button"> Add to Cart</button>
+        </div>
+    </div>
+    <div>
+        <div>
+            <strong>Mystery box</strong>
+        </div>
+        <div>
+            <span>$50.99</span>
+            <button role="button"> Add to Cart</button>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Cart</h2>
+    <div>
+        <span>Product ID</span>
+        <span >Product Name</span>
+        <span>Price</span>
+        <span>Quantity</span>
+        <span>Total</span>
+        <span>Action</span>
+    </div>
+
+    <!--Test Product-->
+    <div>
+        <div >
+            <div>
+                <!--Product ID-->
+                <span>1</span>
+            </div>
+            <div>
+                <!--Product Name-->
+                <span>Consoles</span>
+            </div>
+            <!--Product Price-->
+            <span>$399.99</span>
+            <div>
+                <!--Product Quantity-->
+                <input type="number" value="1" min="1" max="100">
+                <!--Remove product from cart-->
+                <button type="button">REMOVE</button>
+            </div>
+        </div>
+
+        <div>
+            <strong>Total</strong>
+
+            <!--Test price -->
+            <span>$399.99</span>
+        </div>
+
+        <div>
+            <button role="button"> checkout</button>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+$(function(){
+  // Catalog
+  const PRODUCTS = [
+    { id: "P-001", name: "Consoles",    price: 399.99 },
+    { id: "P-002", name: "Computers",   price: 499.99 },
+    { id: "P-003", name: "Laptop",      price: 299.99 },
+    { id: "P-004", name: "Cable",       price:  24.99 },
+    { id: "P-005", name: "Mystery box", price:  50.99 }
+  ];
+
+  let cart = []; // [{id,name,price,qty}]
+
+  const $productsSection = $("section").first();      // first section is Products
+  const $cartSection     = $("section").eq(1);        // second section is Cart
+  const $cartJson        = $("#cartJson");
+
+  function renderProducts(list) {
+    const $list = $("<div class='mt-2'></div>");
+    list.forEach(p => {
+      const $row = $(`
+        <div class="p-2 border rounded m-2 d-flex justify-content-between align-items-center">
+          <div><strong>${p.name}</strong></div>
+          <div>
+            <span class="me-2">$${p.price.toFixed(2)}</span>
+            <button class="btn btn-primary btn-sm" data-add="${p.id}">Add to Cart</button>
+          </div>
+        </div>
+      `);
+      $list.append($row);
+    });
+
+    $productsSection.find("> div").remove();
+    $productsSection.append($list);
+  }
+
+  function addToCart(id) {
+    const p = PRODUCTS.find(x => x.id === id);
+    if (!p) return;
+    const existing = cart.find(x => x.id === id);
+    if (existing) existing.qty += 1;
+    else cart.push({ id: p.id, name: p.name, price: p.price, qty: 1 });
+    updateCart();
+  }
+
+  function removeFromCart(id) {
+    cart = cart.filter(x => x.id !== id);
+    updateCart();
+  }
+
+  function updateQty(id, delta) {
+    const it = cart.find(x => x.id === id);
+    if (!it) return;
+    it.qty += delta;
+    if (it.qty <= 0) removeFromCart(id);
+    updateCart();
+  }
+
+  function updateCart() {
+    const total = cart.reduce((s, it) => s + it.price * it.qty, 0);
+    const $totalSpan = $cartSection.find("div strong + span").first();
+    if ($totalSpan.length) $totalSpan.text(`$${total.toFixed(2)}`);
+
+    let $dyn = $cartSection.find(".dynamic-cart");
+    if (!$dyn.length) {
+      $cartSection.append(`<div class="dynamic-cart mt-2"></div>`);
+      $dyn = $cartSection.find(".dynamic-cart");
+    }
+    $dyn.empty();
+
+    if (!cart.length) {
+      $dyn.append(`<div class="text-muted">Cart is empty.</div>`);
+    } else {
+      cart.forEach(it => {
+        $dyn.append(`
+          <div class="p-2 border rounded m-2 d-flex justify-content-between align-items-center">
+            <div>
+              <div><strong>${it.name}</strong></div>
+              <div class="small text-muted">${it.qty} × $${it.price.toFixed(2)} = $${(it.qty*it.price).toFixed(2)}</div>
+            </div>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary" data-dec="${it.id}">-1</button>
+              <button class="btn btn-outline-secondary" data-inc="${it.id}">+1</button>
+              <button class="btn btn-outline-danger" data-del="${it.id}">Remove</button>
+            </div>
+          </div>
+        `);
+      });
+    }
+  }
+
+  function showCartJson() {
+    const payload = {
+      cart: cart.map(({id,name,price,qty}) => ({id,name,price,qty})),
+      subtotal: cart.reduce((s, it) => s + it.price * it.qty, 0),
+      currency: "USD",
+      submittedAt: new Date().toISOString()
+    };
+    $cartJson.text(JSON.stringify(payload, null, 2)).addClass("border p-3");
+    return payload;
+  }
+
+  // Events
+  $(document).on("click", "[data-add]", function(){ addToCart($(this).data("add")); });
+  $(document).on("click", "[data-inc]", function(){ updateQty($(this).data("inc"), +1); });
+  $(document).on("click", "[data-dec]", function(){ updateQty($(this).data("dec"), -1); });
+  $(document).on("click", "[data-del]", function(){ removeFromCart($(this).data("del")); });
+
+  $("#searchInput").on("input", function(){
+    const term = $(this).val().trim().toLowerCase();
+    const filtered = term
+      ? PRODUCTS.filter(p => p.name.toLowerCase().includes(term))
+      : PRODUCTS.slice();
+    renderProducts(filtered);
+  });
+
+  $("#showJsonBtn").on("click", function(){ showCartJson(); });
+
+  $("#submitBtn").on("click", function(){
+    const payload = showCartJson();
+  
+    $.ajax({
+      url: "https://httpbin.org/post", // swap to your Node API later
+      method: "POST",
+      contentType: "application/json",
+      data: JSON.stringify(payload)
+    }).done(function(){
+      console.log("AJAX OK (cart submit)");
+    }).fail(function(xhr){
+      console.warn("AJAX Error:", xhr.status, xhr.statusText);
+    });
+  });
+
+  // Initial render
+  renderProducts(PRODUCTS);
+  updateCart();
+
+
+  $("header").addClass("p-3"); 
+  $("nav ul").addClass("nav justify-content-center");
+  $("nav ul li").addClass("nav-item mx-2");
+  $("nav ul li a").addClass("nav-link text-black");
+});
+</script>
+</body>
+
+</html>
