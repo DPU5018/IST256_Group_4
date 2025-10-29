@@ -1,101 +1,104 @@
 <!DOCTYPE html>
 <html>
-  <head>
-     <!--Credits: HTML: David Uhlmann CSS: Hamlet Baghdasaryan JavaScript: Abel Chacko-->
-      <link rel="stylesheet" type="text/css" href = "Css.css">
-  </head>
-  <body>
-    
-    <header>
-<nav>
-    <ul>
-        <li><a href="index.html">Sign Up</a></li>
-        <li><a href="ShopingCart.html">Cart</a></li>
-        <li><a href="ProductManagement.html">Product Management</a></li>
-    </ul>
-</nav>
-<hr>
-<h1>TBD Proto Corp inc LLC</h1>
+<head>
+    <!--Credits: HTML: David Uhlmann CSS: Hamlet Baghdasaryan JavaScript: Abel Chacko-->
+    <link rel="stylesheet" type="text/css" href = "Css.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header>
+    <nav>
+        <ul>
+            <li><a href="index.html">Sign Up</a></li>
+            <li><a href="ShoppingCart.html">Cart</a></li>
+            <li><a href="ProductManagment.html">Product Management</a></li>
+        </ul>
+    </nav>
+    <hr>
+    <h1>TBD Proto Corp inc LLC</h1>
 </header>
-      
-      <section>
-        <form>
-          
-          <label for="email">Shopper Email Address: </label><br>
-          <input type="email" id="email" name="email"><br>
-          <br>
-          
-          <label for="fname">Shopper name: </label><br>
-          <input type="text" id="fname" name="fname"><br>
-          <br>
-          
-          <label for="Phone">Shopper Contact Phone Number:</label><br>
-          <input type="Phone" id="Phone" name="Phone"> <br>
-          <br>
-          
-          <label for="Age"> Shopper Age</label><br>
-          <input type="Age" id="Age" name="Age"><br>
-          <br>
-          
-          <label for="Address">Shopper Address: </label><br>
-          <input type="Address" id="Address" name="Address"><br>
-          <br>
-          
-          <button type="button" id="submitBtn">Submit</button>
-  
-  
-</form>
-      <pre id="json-output"></pre>
-      </section>
 
-      <script src = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-      <script>
-        document.getElementById("submitBtn").addEventListener("click", function () {
-          const form = document.getElementById("shopperForm");
-          const email = document.getElementById("email").value.trim();
-          const name = document.getElementById("fname").value.trim();
-          const phone = document.getElementById("Phone").value.trim();
-          const age = document.getElementById("Age").value.trim();
-          const address = document.getElementById("Address").value.trim();
-          const output = document.getElementById("json-output");
+<section>
+    <form id="shopperForm">
 
-          if (!email || !fname || !phone || !age || !address) {
-            alert("Please fill every single field!");
-            return;
-          }
+        <label for="email">Shopper Email Address: </label><br>
+        <input type="email" id="email" name="email" required><br>
+        <br>
 
-          const phonePattern = /^[0-9]{10}$/;
-          if (!phonePattern.test(phone)) {
-            alert("Not valid! Enter a valid ten digit number!");
-            return;
-          }
+        <label for="fname">Shopper name: </label><br>
+        <input type="text" id="fname" name="fname" required><br>
+        <br>
 
-          if (age < 16 || age > 100) {
-            alert("Age must be between 16 and 100");
-            return;
-          }
+        <label for="Phone">Shopper Contact Phone Number:</label><br>
+        <input type="tel" id="Phone" name="Phone" inputmode="numeric" pattern="\d{10}" required> <br>
+        <br>
 
-          const shopperData = {
-            email: email,
-            name: fname,
-            phone: phone,
-            age: age,
-            address: address,
-          };
+        <label for="Age"> Shopper Age</label><br>
+        <input type="number" id="Age" name="Age" min="16" max="100" required><br>
+        <br>
 
-          output.textContent = JSON.stringify(shopperData, null, 2);
+        <label for="Address">Shopper Address: </label><br>
+        <input type="text" id="Address" name="Address" required><br>
+        <br>
 
-          output.classList.add("border", "border-success", "p-3");
-        });
-      </script>
-      
-      
-      
-  </body>
+        <button type="button" id="submitBtn">Submit</button>
+
+
+    </form>
+    <pre id="json-output"></pre>
+</section>
+
+<script src = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+  $("#submitBtn").on("click", function () {
+    const email   = $("#email").val().trim();
+    const name    = $("#fname").val().trim();
+    let   phone   = $("#Phone").val().trim().replace(/\D/g, "");
+    const ageNum  = Number($("#Age").val().trim());
+    const address = $("#Address").val().trim();
+    const $out    = $("#json-output");
+
+    if (!email || !name || !phone || !ageNum || !address) {
+      alert("Please fill every single field!");
+      return;
+    }
+    if (!/^\d{10}$/.test(phone)) {
+      alert("Not valid! Enter a valid ten-digit number!");
+      return;
+    }
+    if (ageNum < 16 || ageNum > 100) {
+      alert("Age must be between 16 and 100");
+      return;
+    }
+
+    const shopperData = { email, name, phone, age: ageNum, address };
+
+    // Show JSON on page 
+    $out.text(JSON.stringify(shopperData, null, 2)).addClass("border border-success p-3");
+
+    // AJAX transport 
+    $.ajax({
+      url: "https://httpbin.org/post",
+      method: "POST",
+      contentType: "application/json",
+      data: JSON.stringify(shopperData)
+    }).done(function () {
+      console.log("AJAX OK (index submit)");
+    }).fail(function (xhr) {
+      console.warn("AJAX Error:", xhr.status, xhr.statusText);
+    });
+  });
+</script>
+
+
+
+</body>
 
 </html>
-
 
 
 
