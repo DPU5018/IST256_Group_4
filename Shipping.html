@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shipping</title>
+    <link rel="stylesheet" type="text/css" href = "Css.css">
+</head>
+<body>
+<header>
+    <nav>
+        <ul>
+            <li><a href="index.html">Sign Up</a></li>
+            <li><a href="ShoppingCart.html">Cart</a></li>
+            <li><a href="ProductManagement.html">Product Management</a></li>
+            <li><a href="Shipping.html"> Shipping Information</a></li>
+        </ul>
+    </nav>
+    <hr>
+    <h1>TBD Proto Corp inc LLC</h1>
+</header>
+<section>
+    <h2> Shipping Carrier Information</h2>
+    <div>
+        <div>
+            <label for="address">Address:</label><br>
+            <input type="text" id="address" name="address"><br>
+
+        </div>
+        <div>
+            <label for="city">City:</label><br>
+            <input type="text" id="city" name="city"><br>
+        </div>
+        <div>
+            <label for="state">State:</label><br>
+            <input type="text" id="state" name="state"><br>
+        </div>
+        <div>
+            <label for="ZIP">ZIP Code:</label><br>
+            <input type="text" id="ZIP" name="ZIP"><br>
+        </div>
+        <div>
+            <label for="carrier">Select a Carrier:</label><br>
+            <select name="carrier" id="carrier">
+                <option value=" " selected="selected">Select Carrier</option>
+                <option value="USPS">USPS</option>
+                <option value="FEDEX">FEDEX</option>
+                <option value="UPS">UPS</option>
+            </select>
+            <br>
+        </div>
+        <div>
+            <label for="method">Select a method:</label><br>
+            <select name="method" id="method">
+                <option value=" " selected="selected">Select method</option>
+                <option value="Expedited">Expedited</option>
+                <option value="Standard">Standard</option>
+                <option value="Free">Free</option>
+            </select>
+            <br>
+            <br>
+        </div>
+        <input type="submit" id="Ship" value="Submit">
+        <br>
+    </div>
+</section>
+</body>
+</html>
