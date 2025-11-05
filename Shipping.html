@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Shipping</title>
     <link rel="stylesheet" type="text/css" href = "Css.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 <header>
@@ -63,5 +65,41 @@
         <br>
     </div>
 </section>
+<script>
+$(document).ready(function() {
+    $("#Ship").click(function(event) {
+        event.preventDefault(); // Stop page reload
+
+        // Gather form values
+        let address = $("#address").val().trim();
+        let city = $("#city").val().trim();
+        let state = $("#state").val().trim();
+        let zip = $("#ZIP").val().trim();
+        let carrier = $("#carrier").val().trim();
+        let method = $("#method").val().trim();
+
+        // Basic validation
+        if (!address || !city || !state || !zip || carrier === " " || method === " ") {
+            alert("Please complete all fields before submitting.");
+            return;
+        }
+
+        // Create JSON object
+        let shippingInfo = {
+            Address: address,
+            City: city,
+            State: state,
+            ZIP: zip,
+            Carrier: carrier,
+            Method: method
+        };
+
+        // Display JSON formatted on page
+        $("#jsonOutput").text(JSON.stringify(shippingInfo, null, 4));
+    });
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
