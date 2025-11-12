@@ -9,13 +9,15 @@
     
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    
+    <!-- AngularJS (per assignment) | Author: Hamlet Baghdasaryan -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <link rel="stylesheet" type="text/css" href="Css.css">
 </head>
-<body>
+<body ng-app="storeApp">
 <header class="bg-primary text-white p-3">
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
@@ -36,9 +38,9 @@
     </nav>
 </header>
 
-<main class="container my-5">
+<main class="container my-5" ng-controller="ReturnsCtrl as vm">
     <h2>Return Items</h2>
-    
+
     <!-- Return Items Table -->
     <div class="table-responsive my-4">
         <table class="table table-bordered table-striped" id="returnTable">
@@ -52,73 +54,65 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Items to return will be dynamically loaded -->
+                <tr ng-repeat="item in vm.items track by $index">
+                    <td>{{ item.orderNumber }}</td>
+                    <td>{{ item.productName }}</td>
+                    <td><input type="number" min="1" class="form-control" ng-model="item.quantity"></td>
+                    <td><input type="text" class="form-control" ng-model="item.reason" placeholder="Reason for return"></td>
+                    <td><button type="button" class="btn btn-danger" ng-click="vm.remove($index)">Remove</button></td>
+                </tr>
             </tbody>
         </table>
     </div>
 
     <!-- JSON Display for debugging -->
     <h5>Return Products JSON:</h5>
-    <pre id="returnJSON" class="bg-light p-3 border rounded"></pre>
+    <pre id="returnJSON" class="json-output">{{ vm.items | json:2 }}</pre>
+    <div id="ajaxStatus" class="mt-3" ng-if="vm.status.msg" ng-class="'alert alert-' + vm.status.kind">{{ vm.status.msg }}</div>
+    <pre id="ajaxResponse" class="bg-light p-3 border rounded" ng-if="vm.server">{{ vm.server | json:2 }}</pre>
 
     <div class="mb-3">
-        <button id="submitReturn" class="btn btn-success">Submit Return</button>
+        <button class="btn btn-success" ng-click="vm.submit()">Submit Return</button>
         <a href="BillingDetails.html" class="btn btn-secondary">Back to Billing</a>
     </div>
 </main>
 
 <script>
-// Sample JSON of products to return
-let returnProducts = [
-    {orderNumber: "A1001", productName: "Laptop", quantity: 1, reason: ""},
-    {orderNumber: "A1002", productName: "Mouse", quantity: 2, reason: ""}
-];
+  (function(){
+    'use strict';
+    angular.module('storeApp', [])
+      .controller('ReturnsCtrl', function($http){
+        var vm = this;
+        // Initial items (migrated from previous jQuery array)
+        vm.items = [
+          {orderNumber: 'A1001', productName: 'Laptop', quantity: 1, reason: ''},
+          {orderNumber: 'A1002', productName: 'Mouse',  quantity: 2, reason: ''}
+        ];
 
-// Load table and JSON display
-$(document).ready(function(){
-    let tbody = $("#returnTable tbody");
+        vm.status = {kind:'', msg:''};
+        vm.server = null;
 
-    function refreshTable() {
-        tbody.empty();
-        returnProducts.forEach((item, index) => {
-            tbody.append(`
-                <tr>
-                    <td>${item.orderNumber}</td>
-                    <td>${item.productName}</td>
-                    <td>${item.quantity}</td>
-                    <td><input type="text" class="form-control reason" data-index="${index}" placeholder="Reason for return"></td>
-                    <td><button class="btn btn-danger removeRow" data-index="${index}">Remove</button></td>
-                </tr>
-            `);
-        });
+        vm.remove = function(idx){ vm.items.splice(idx, 1); };
 
-        // Update JSON display
-        $("#returnJSON").text(JSON.stringify(returnProducts, null, 4));
-    }
-
-    refreshTable();
-
-    // Capture reason changes
-    $(document).on("input", ".reason", function(){
-        let idx = $(this).data("index");
-        returnProducts[idx].reason = $(this).val();
-        $("#returnJSON").text(JSON.stringify(returnProducts, null, 4));
-    });
-
-    // Remove row
-    $(document).on("click", ".removeRow", function(){
-        let idx = $(this).data("index");
-        returnProducts.splice(idx, 1);
-        refreshTable();
-    });
-
-    // Submit returns via AJAX (simulated)
-    $("#submitReturn").click(function(){
-        alert("Return request submitted! Check JSON below and console.");
-        console.log("Returning products:", returnProducts);
-    });
-});
-</script>
+        vm.submit = function(){
+          vm.status = {kind:'info', msg:'Submitting return request...'};
+          vm.server = null;
+          // TODO: Replace with real NodeJS endpoint before sumbission 
+          var endpoint = 'https://httpbin.org/post';
+          $http.post(endpoint, { returns: vm.items })
+            .then(function(res){
+              vm.status = {kind:'success', msg:'Return submitted successfully.'};
+              vm.server = res.data;
+            })
+            .catch(function(err){
+              var msg = (err && err.data && (err.data.message||err.statusText)) || 'Request failed. Check API & CORS.';
+              vm.status = {kind:'danger', msg: msg};
+              vm.server = err && err.data ? err.data : err;
+            });
+        };
+      });
+  })();
+  </script>
 
 
 </body>
