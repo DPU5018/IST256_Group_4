@@ -9,13 +9,15 @@
     
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    
+    <!-- AngularJS (per assignment) | Author: Hamlet Baghdasaryan -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <link rel="stylesheet" type="text/css" href="Css.css">
 </head>
-<body>
+<body ng-app="storeApp">
 <header class="bg-primary text-white p-3">
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
@@ -36,9 +38,9 @@
     </nav>
 </header>
 
-<main class="container my-5">
+<main class="container my-5" ng-controller="BillingCtrl as vm">
     <h2>Billing Details</h2>
-    
+
     <!-- Purchase Receipt Table -->
     <div class="table-responsive my-4">
         <table class="table table-bordered table-striped" id="billingTable">
@@ -51,22 +53,30 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Data will be dynamically loaded here -->
+                <tr ng-repeat="order in vm.orders">
+                  <td>{{order.receipt}}</td>
+                  <td>{{order.date}}</td>
+                  <td>{{order.orderNumber}}</td>
+                  <td>{{order.shippingAddress}}</td>
+                </tr>
             </tbody>
         </table>
     </div>
 
     <!-- JSON Display for debugging -->
     <h5>Billing Orders JSON:</h5>
-    <pre id="billingJSON" class="bg-light p-3 border rounded"></pre>
+    <pre id="billingJSON" class="bg-light p-3 border rounded">{{ vm.orders | json:2 }}</pre>
+    <button class="btn btn-success mt-2" ng-click="vm.submit()">Submit Billing (AJAX)</button>
+    <div id="ajaxStatus" class="mt-3" ng-if="vm.status.msg" ng-class="'alert alert-' + vm.status.kind">{{ vm.status.msg }}</div>
+    <pre id="ajaxResponse" class="bg-light p-3 border rounded" ng-if="vm.server">{{ vm.server | json:2 }}</pre>
 
     <!-- Manage Previous Orders Card -->
     <div class="card p-3 mb-3">
         <h4>Manage Previous Orders</h4>
         <div class="mb-2">
             <label for="orderSearch" class="form-label">Tracking Current Orders:</label>
-            <input type="text" id="orderSearch" class="form-control mb-2" placeholder="Enter Order Number">
-            <button id="trackOrderBtn" class="btn btn-primary">Track Order</button>
+            <input type="text" class="form-control mb-2" placeholder="Enter Order Number" ng-model="vm.orderSearch">
+            <button class="btn btn-primary" ng-click="vm.trackOrder()">Track Order</button>
         </div>
         <div>
             <a href="ItemsReturns.html" class="btn btn-warning">Return Items</a>
@@ -75,41 +85,49 @@
 </main>
 
 <script>
-// Sample JSON document with products
-let orders = [
-    {receipt: "001", date: "2025-11-10", orderNumber: "A1001", shippingAddress: "123 Main St, City"},
-    {receipt: "002", date: "2025-11-09", orderNumber: "A1002", shippingAddress: "456 Oak Ave, Town"}
-];
+  (function(){
+    'use strict';
+    angular.module('storeApp', [])
+      .controller('BillingCtrl', function($http){
+        var vm = this;
+        // Sample JSON document with products (moved from jQuery to Angular model)
+        vm.orders = [
+          {receipt: '001', date: '2025-11-10', orderNumber: 'A1001', shippingAddress: '123 Main St, City'},
+          {receipt: '002', date: '2025-11-09', orderNumber: 'A1002', shippingAddress: '456 Oak Ave, Town'}
+        ];
 
-// Load billing table and JSON display
-$(document).ready(function(){
-    let tbody = $("#billingTable tbody");
-    orders.forEach(order => {
-        tbody.append(`
-            <tr>
-                <td>${order.receipt}</td>
-                <td>${order.date}</td>
-                <td>${order.orderNumber}</td>
-                <td>${order.shippingAddress}</td>
-            </tr>
-        `);
-    });
+        vm.status = {kind:'', msg:''};
+        vm.server = null;
+        vm.orderSearch = '';
 
-    // Display JSON in <pre>
-    $("#billingJSON").text(JSON.stringify(orders, null, 4));
+        vm.trackOrder = function(){
+          var match = vm.orders.find(function(o){ return o.orderNumber === (vm.orderSearch||'').trim(); });
+          if(match){
+            alert('Order Found: ' + JSON.stringify(match, null, 2));
+          } else {
+            alert('Order not found');
+          }
+        };
 
-    // Track Order button
-    $("#trackOrderBtn").click(function(){
-        let searchOrder = $("#orderSearch").val().trim();
-        let filtered = orders.filter(o => o.orderNumber === searchOrder);
-        if(filtered.length > 0){
-            alert("Order Found: " + JSON.stringify(filtered[0], null, 4));
-        } else {
-            alert("Order not found");
-        }
-    });
-});
-</script>
+        vm.submit = function(){
+          vm.status = {kind:'info', msg:'Submitting billing details...'};
+          vm.server = null;
+          // TODO: replace with real NodeJS endpoint 
+          var endpoint = 'https://httpbin.org/post';
+          $http.post(endpoint, vm.orders)
+            .then(function(res){
+              vm.status = {kind:'success', msg:'Billing submitted successfully.'};
+              vm.server = res.data;
+            })
+            .catch(function(err){
+              var msg = (err && err.data && (err.data.message||err.statusText)) || 'Request failed. Check API & CORS.';
+              vm.status = {kind:'danger', msg: msg};
+              vm.server = err && err.data ? err.data : err;
+            });
+        };
+      });
+  })();
+  </script>
 
 </body>
 </html>
