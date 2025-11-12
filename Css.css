@@ -19,7 +19,7 @@ h1 {
 
 /* ---------- Card / Main container ---------- */
 section {
-    background: #c8e8df !important;
+    background: #c8e8df;
     border: 1px solid #ddd;
     border-radius: 16px;
     box-shadow: 0 8px 20px rgba(0,0,0,.08);
@@ -34,12 +34,17 @@ nav {
     display: inline-block;
     margin: 6px 0 14px;
     padding: 6px 10px;
+}
+
+nav a {
     background: #fff;
     color: #1f2937;
     border: 1px solid #e5e7eb;
     border-radius: 999px;
     font-weight: 600;
     text-decoration: none;
+    display: inline-block;
+    padding: 6px 10px;
 }
 
 /* ---------- Nav list styling ---------- */
@@ -102,11 +107,11 @@ select:focus {
 }
 
 /* ---------- Buttons ---------- */
-button {
+.btn-gold {
     display: block;
     width: 100%;
-    background-color: #d4af37;
-    color: #fff;
+    background-color: #b38700;
+    color: #111;
     border: none;
     padding: 12px 16px;
     border-radius: 8px;
@@ -115,25 +120,8 @@ button {
     cursor: pointer;
     transition: background-color .2s ease, transform .06s ease;
 }
-button:hover { background-color: #b8961a; }
-button:active { transform: translateY(1px); }
-
-
-#saveButton {
-    display: block;
-    width: 100%;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color .2s ease, transform .06s ease;
-    background-color: #d4af37;
-    color: #fff;
-}
-#saveButton:hover { background-color: #b8961a; }
-#saveButton:active { transform: translateY(1px); }
+.btn-gold:hover { background-color: #966f00; }
+.btn-gold:active { transform: translateY(1px); }
 
 
 .btn { display: inline-block; font-weight: 700; border-radius: 8px; border: none; padding: 10px 14px; cursor: pointer; }
@@ -142,10 +130,7 @@ button:active { transform: translateY(1px); }
 .mt-2 { margin-top: .5rem; }
 
 /* ---------- JSON output boxes  ---------- */
-#json-output,
-#Json-Output,
-#JSON-Output,
-#cartJson {
+.json-output {
     margin-top: 20px;
     background: #0b1220;
     color: #e5e7eb;
