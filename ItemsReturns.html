@@ -102,7 +102,7 @@
             const bodyParser = require('body-parser');
             const app = express();
             const server = require('http').Server(app);
-            const port = 3000;
+            const port = 3004;
             const helmet = require('helmet');
 
             app.use(helmet());
@@ -131,7 +131,7 @@
 
             module.exports = server;
 
-          var endpoint = 'https://httpbin.org/post';
+          var endpoint = 'https://130.203.136.203:3004/api';
           $http.post(endpoint, { returns: vm.items })
             .then(function(res){
               vm.status = {kind:'success', msg:'Return submitted successfully.'};
